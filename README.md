@@ -1,6 +1,6 @@
 # first_cnc_mill
 
-![Alt Text](./trv.png)
+![TRV](./trv.png)
 
 # CNC Milling Standard Operating Procedure (SOP)
 
