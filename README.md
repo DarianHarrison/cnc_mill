@@ -1,6 +1,4 @@
-# first_cnc_mill
-
-# Precision Desktop CNC Milling: End-to-End Workflow SOP
+# Desktop CNC Milling: End-to-End Workflow SOP
 
 This document outlines the proven process for safely executing CNC routing jobs on a **Genmitsu 3018-PROVer V2** (GRBL) platform, calibrated for single-flute upcut micro-tooling in Medium-Density Fiberboard (MDF).
 
