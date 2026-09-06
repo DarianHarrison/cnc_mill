@@ -1,6 +1,6 @@
 # first_cnc_mill
 
-![TRV](./trv.png)
+![TRV](./trv_clean.png)
 
 # CNC Milling Standard Operating Procedure (SOP)
 
@@ -84,3 +84,5 @@ If you hit "Play" and nothing happens, the GRBL board is likely paused:
 When migrating away from MDF, adjust tooling and CAM parameters:
 * **Acrylic/Plastics:** Standard flat endmills will melt the plastic and snap. Switch to a **Single Flute Upcut** bit, increase the feed rate significantly to prevent heat buildup, and use shallow step-downs.
 * **Hardwoods (Oak/Maple):** Much denser than MDF. Reduce feed rates, reduce step-down depth, and use "ramping" (plunging at an angle rather than straight down) to prevent burning the wood.
+
+![TRV](./trv_dirty.png)
