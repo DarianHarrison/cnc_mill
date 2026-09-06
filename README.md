@@ -1,88 +1,94 @@
 # first_cnc_mill
 
-![TRV](./trv_clean.jpeg)
+# Precision Desktop CNC Milling: End-to-End Workflow SOP
 
-# CNC Milling Standard Operating Procedure (SOP)
+This document outlines the proven process for safely executing CNC routing jobs on a **Genmitsu 3018-PROVer V2** (GRBL) platform, calibrated for single-flute upcut micro-tooling in Medium-Density Fiberboard (MDF).
 
-This guide documents the end-to-end workflow for designing, prepping, and safely executing CNC milling jobs on a Genmitsu 3018 CNC (or similar desktop routers), using Inkscape (Vector), Kiri:Moto (CAM), and CNCjs (Sender).
-
-## 1. Hardware & Environment Profile
-* **Machine:** Genmitsu 3018 (Max physical travel: 300mm X, 180mm Y)
-* **Spindle:** 775 Brushed DC Motor
-* **Control Software:** GRBL (via CNCjs)
-* **Tooling Lifecycle:** Micro-tooling (e.g., 2mm carbide endmills) are consumables. Dull bits should be stored safely and sold to specialized scrap yards ($15-$23/lb for pure solid tungsten carbide).
+## 1. Hardware & Tooling Profile
+* **Machine:** Genmitsu 3018-PROVer V2 (Max travel: 300x180x45mm, equipped with limit switches and physical E-Stop)
+* **Spindle:** 775 DC Brushed Motor (24V)
+* **Tool:** HQMaster 2mm Single Flute Upcut (O-Flute) Solid Tungsten Carbide 
+  * *Tool Characteristics:* Upcut flutes aggressively extract dust to prevent heat buildup. Requires higher feed rates for proper chip load. Upcut geometry naturally pulls top fibers, causing surface fuzz on MDF.
+* **Workpiece:** 3/4" MDF
+* **Software Stack:** Inkscape (Vector) > Kiri:Moto (CAM) > CNCjs (Sender)
 
 ---
 
-## 2. Phase 1: Vector Design & Feasibility (Inkscape)
+## 2. Phase 1: Vector Validation & Design (Inkscape)
 
-### The Stroke Simulation Trick
-Before exporting, mathematically prove the bit fits inside the design geometries to prevent the CAM software from generating self-intersecting blobs.
+### The 2.1mm "Physical Kerf" Simulation
+Mathematically prove the 2mm bit physically fits inside your geometry to prevent CAM from generating self-intersecting toolpaths.
 1. Select the entire design (`Ctrl+A`).
-2. Remove solid color fills (`No paint`).
-3. Apply a solid **Stroke color**.
-4. Set the **Stroke width** strictly 0.1mm larger than your endmill (e.g., `2.1mm` for a `2mm` bit).
-5. **Verify:** Zoom in on tight corners and inner loops (like "e" or "a"). If the lines pinch completely shut, the bit is too large. Fix by changing the font, switching to a V-bit, or scaling the design up.
+2. Open Fill and Stroke (`Ctrl+Shift+F`). Remove solid fills (`No paint`).
+3. Apply a solid **Stroke color** and set width to **2.1 mm**.
+4. **Verify:** Zoom in on tight internal loops (e.g., "e", "a"). If stroke lines pinch shut, stack the text, enlarge the design, or switch to a V-bit.
 
-### Physical Boundary Constraints
-* Leave a strict 10mm-20mm safety margin on all sides to prevent gantry crashes. 
-* For a 300x180mm bed, scale the absolute maximum design bounding box to **280x160mm**.
-* Once verified, convert all text/shapes to raw vectors (`Path > Object to Path`) before saving as SVG.
-
----
-
-## 3. Phase 2: CAM Setup (Kiri:Moto)
-
-Configure safe material removal rates. Default baseline for MDF:
-* **Step Down:** `0.5mm` (Never force deep single passes).
-* **Target Depth:** Ensure your total depth is set (e.g., `1.5mm`).
-* **Z-Bottom Override:** Leave the `Z Bottom` parameter **blank** unless explicitly necessary, as filling it can cause CAM calculation errors or force the bit to skip the cut entirely.
-* **Visual Verification:** Always preview the 3D toolpath. Manually count the layer lines (e.g., three visible layers for a 1.5mm total depth at a 0.5mm step-down). Export as `.nc` G-code.
+### Boundary Constraints & Export
+* Scale the design to a maximum width of **280mm** (leaving a 10mm safety margin).
+* Convert all text to vectors (`Path > Object to Path`).
+* Save as a **Plain SVG**.
 
 ---
 
-## 4. Phase 3: Machine Setup & Zeroing (CNCjs)
+## 3. Phase 2: CAM Toolpaths & Deep Evaluation (Kiri:Moto)
 
-### Strategic Clamping
-Position all clamps on the extreme outer perimeter of the stock. Manually jog the spindle over the clamps to verify it will not collide during its maximum X/Y travel.
-
-### Zeroing Coordinates
-1. **X and Y:** Jog to the bottom-left corner of the stock. Zero both axes (Map Pin icons).
-2. **Z Axis (Paper Trick):** Place printer paper under the bit. Drop the jog step to `0.1mm`. Lower the Z-axis until it slightly drags the paper. Zero the Z-axis.
-3. **Safety Retract:** Immediately change the jog step to `10mm` and lift the Z-axis into the air. **Never start the spindle while touching the stock.**
-
----
-
-## 5. Phase 4: Pre-Flight & Execution
-
-### Final Software Checks
-* **Z Min Verification:** Look at the G-code bounding box in CNCjs. Verify `Z Min` perfectly matches your CAM target depth (e.g., `-1.510 mm`).
-* **Queue Verification:** Ensure the G-code is fully loaded (Lines Sent: `0 / [Total]`).
-
-### State Management & Troubleshooting
-If you hit "Play" and nothing happens, the GRBL board is likely paused:
-* **Clear the Hold:** If an orange **Hold** badge is visible (often triggered by the Feedhold `!` command), click **Cycle Start** (`~` in top right) to return the machine to **Idle**.
-* **Soft Reset:** If the connection is completely stale, click the red **Reset** button, click **Unlock**, re-upload the G-code file, and hit Play. (This preserves your zero coordinates).
-* **Emergency Hard Kill:** If the bit plunges too deep or the machine crashes, physically yank the power cord. Do not rely on software buttons during a hardware collision.
+Double-check these parameters to prevent catastrophic machine dives or tool breakage:
+* **Unit Verification:** Confirm the workspace is strictly set to **Metric (mm)**. A 1.5-inch dive instead of 1.5mm will instantly crash the PROVer V2.
+* **Step Down:** `0.5 mm`. Never force deep single passes on micro-tooling.
+* **Target Depth:** `1.5 mm` (Total of 3 passes).
+* **Clearance / Safe Z:** Ensure the retract height is `10.0 mm` so the bit clears clamps during rapid travel.
+* **Feed Rate:** `600–800 mm/min` (Optimized for single-flute O-Flute in MDF).
+* **Plunge Rate:** `100 mm/min`.
+* **Z-Bottom Override:** Leave **blank**. Manual overrides conflict with target depths.
+* **Verification:** Generate the preview. Visually count the 3 distinct cut layers. Export the `.nc` file.
 
 ---
 
-## 6. Phase 5: Post-Job & Maintenance
+## 4. Phase 3: Setup & Zeroing (CNCjs)
 
-### Static Safety & Dust Management
-* **MDF Warning:** Never use a plastic vacuum wand near the spinning metal spindle during a carve. The fine dust generates static electricity that can arc to the frame, shorting the USB connection and ruining the job.
-* **Cleanup:** Wait 1-2 minutes for toxic dust (MDF glue/resins) to settle. Jog the bit away, completely power off the machine, and *then* vacuum or sweep. Clear fuzzy edges on MDF with a stiff dry brush or Scotch-Brite pad.
+### Clamping & Safe Zones
+Clamp the MDF strictly on the extreme outer edges. Ensure the PROVer V2's limit switches are clear of debris so they can successfully trigger if the machine over-travels.
 
-### Maintenance Cycles (Every 10-20 Hours)
-* **Lubrication:** Apply dry PTFE spray to X, Y, and Z threaded rods. Never use wet/heavy greases, which will turn MDF dust into concrete.
-* **Hardware:** Check and tighten the grub screws on the motor couplers and the main frame bolts, which vibrate loose over time.
+### The Zeroing Protocol
+1. **X/Y Origin:** Jog the bit to the bottom-left corner. Click the zero/map-pin icons for X and Y in CNCjs.
+2. **Z Origin (Paper Trick):** Place printer paper beneath the bit. Set jog increments to `0.1 mm`. Step down until the bit slightly grips the paper. Zero the Z-axis.
+3. **Safety Retract:** Change the jog increment to `10 mm` and lift the Z-axis. **Never start the spindle while touching the wood.**
 
 ---
 
-## 7. Future Material Adaptations
+## 5. Phase 4: Pre-Flight Safety & Execution
 
-When migrating away from MDF, adjust tooling and CAM parameters:
-* **Acrylic/Plastics:** Standard flat endmills will melt the plastic and snap. Switch to a **Single Flute Upcut** bit, increase the feed rate significantly to prevent heat buildup, and use shallow step-downs.
-* **Hardwoods (Oak/Maple):** Much denser than MDF. Reduce feed rates, reduce step-down depth, and use "ramping" (plunging at an angle rather than straight down) to prevent burning the wood.
+### 5-Point Safety Audit (Do this before hitting Play)
+1. **PPE:** Safety glasses are physically on your face.
+2. **Collet Check:** Take your two wrenches and physically verify the collet nut is fully tightened. Machine vibration will pull a loose bit downward, ruining the zero and gouging the spoilboard.
+3. **E-Stop Readiness:** Locate the PROVer V2's physical red E-Stop button. Ensure it is unlocked (twisted clockwise) and your hand can easily reach it.
+4. **Code Audit:** In CNCjs, verify `Z Min` strictly reads `-1.510 mm`. 
+5. **Clearance:** Cables and hoses have full slack and will not catch on the moving gantry.
+
+### Clearing GRBL Holds & Connection Freezes
+* **Orange "Hold" State:** Click **Cycle Start** (the `~` button top-right) to return to **Idle**.
+* **Soft Reset:** If the machine freezes, click **Reset**, then **Unlock**, re-upload the `.nc` file, and hit Play.
+
+---
+
+## 6. Phase 5: Post-Processing & Cleanup
+
+### Safe Dust Extraction
+* **Static Hazard:** Do NOT use a plastic vacuum wand near the spinning spindle. Static buildup will arc to the aluminum frame and short the USB connection.
+* Wait 1-2 minutes for airborne dust to settle.
+* Jog the bit up and away, power off the PROVer V2 controller, and extract the workpiece.
+
+### Surface Finishing
+1. Take the board outside and blow out the heavy debris from the 1.5mm channels.
+2. Scrub the surface and the inside of the letters with a stiff dry toothbrush or Scotch-Brite pad to shear off the remaining MDF fuzz.
+
+---
+
+## 7. Lifecycle & Maintenance
+* **Tool Disposal:** Solid tungsten carbide is scrap metal. Collect dull bits in a jar for scrap recycling (or discard if you so choose to do so).
+* **Lubrication:** Every 10-20 hours, apply **Dry PTFE Lube** to the threaded lead screws and smooth guide rods.
+* **Fasteners:** Periodically check and tighten the grub screws on the motor couplers to prevent axis slipping.
 
 ![TRV](./trv_dirty.jpeg)
+
+![TRV](./trv_clean.jpeg)
