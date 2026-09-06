@@ -42,6 +42,17 @@ Double-check these parameters to prevent catastrophic machine dives or tool brea
 * **Z-Bottom Override:** Leave **blank**. Manual overrides conflict with target depths.
 * **Verification:** Generate the preview. Visually count the 3 distinct cut layers. Export the `.nc` file.
 
+![Kiri:Moto1](./images/1.kiri1.png)
+![Kiri:Moto2](./images/1.kiri2.png)
+![Kiri:Moto3](./images/1.kiri3.png)
+![Kiri:Moto4](./images/1.kiri4.png)
+![Kiri:Moto5](./images/1.kiri5.png)
+![Kiri:Moto6](./images/1.kiri6.png)
+![Kiri:Moto7](./images/1.kiri7.png)
+![Kiri:Moto8](./images/1.kiri8.png)
+![Kiri:Moto9](./images/1.kiri9.png)
+![Kiri:Moto10](./images/1.kiri10.png)
+
 ---
 
 ## 4. Phase 3: Setup & Zeroing (CNCjs)
@@ -53,6 +64,9 @@ Clamp the MDF strictly on the extreme outer edges. Ensure the PROVer V2's limit 
 1. **X/Y Origin:** Jog the bit to the bottom-left corner. Click the zero/map-pin icons for X and Y in CNCjs.
 2. **Z Origin (Paper Trick):** Place printer paper beneath the bit. Set jog increments to `0.1 mm`. Step down until the bit slightly grips the paper. Zero the Z-axis.
 3. **Safety Retract:** Change the jog increment to `10 mm` and lift the Z-axis. **Never start the spindle while touching the wood.**
+
+![CNCjs1](./images/2.cncjs1.png)
+![CNCjs2](./images/2.cncjs2.png)
 
 ---
 
@@ -89,6 +103,5 @@ Clamp the MDF strictly on the extreme outer edges. Ensure the PROVer V2's limit 
 * **Lubrication:** Every 10-20 hours, apply **Dry PTFE Lube** to the threaded lead screws and smooth guide rods.
 * **Fasteners:** Periodically check and tighten the grub screws on the motor couplers to prevent axis slipping.
 
-![TRV](./trv_dirty.jpeg)
-
-![TRV](./trv_clean.jpeg)
+![TRV](./images/3.trv1.jpeg)
+![TRV](./images/3.trv2.jpeg)
