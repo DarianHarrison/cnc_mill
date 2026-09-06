@@ -94,12 +94,14 @@ Clamp the MDF strictly on the extreme outer edges. Ensure the PROVer V2's limit 
 1. Take the board outside and blow out the heavy debris from the 1.5mm channels.
 2. Scrub the surface and the inside of the letters with a stiff dry toothbrush or Scotch-Brite pad to shear off the remaining MDF fuzz.
 
+
+![TRV](./images/3.trv1.jpeg)
+![TRV](./images/3.trv2.jpeg)
+
+
 ---
 
 ## 7. Lifecycle & Maintenance
 * **Tool Disposal:** Solid tungsten carbide is scrap metal. Collect dull bits in a jar for scrap recycling (or discard if you so choose to do so).
 * **Lubrication:** Every 10-20 hours, apply **Dry PTFE Lube** to the threaded lead screws and smooth guide rods.
 * **Fasteners:** Periodically check and tighten the grub screws on the motor couplers to prevent axis slipping.
-
-![TRV](./images/3.trv1.jpeg)
-![TRV](./images/3.trv2.jpeg)
